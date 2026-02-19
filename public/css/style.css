@@ -51,3 +51,7 @@
         .flipped .piece {
             transform: rotate(180deg);
         }
+        .square.highlight {
+            color: green;
+            background-color: yellow !important;
+        }

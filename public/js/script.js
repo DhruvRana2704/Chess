@@ -36,6 +36,7 @@ const renderBoard = () => {
                 pieceElement.addEventListener('dragend', () => {
                     draggedPiece = null;
                     sourceSquare = null;
+                    targetSource = null;
                 })
 
                 squareElement.appendChild(pieceElement)
@@ -49,7 +50,7 @@ const renderBoard = () => {
                 if (draggedPiece) {
                     targetSource = { row: parseInt(squareElement.dataset.row), col: parseInt(squareElement.dataset.col) };
                 }
-                console.log('Move from', sourceSquare, 'to', targetSource);
+      
                 handleMove(sourceSquare, targetSource);
             })
             boardElement.appendChild(squareElement);
@@ -88,8 +89,7 @@ const handleMove = (source, target) => {
         promotion: 'q'
     }
     socket.emit('move', move);
-    renderBoard();
-
+    
 }
 
 socket.on('playerRole', (role) => {
