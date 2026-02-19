@@ -59,6 +59,8 @@ const renderBoard = () => {
     });
     if (playerRole == 'b') {
         boardElement.classList.add("flipped")
+    } else {
+        boardElement.classList.remove("flipped")
     }
 }
 
@@ -80,8 +82,6 @@ const getPieceUnicode = (type) => {
     return pieces[type] || '';
 }
 
-renderBoard();
-
 const handleMove = (source, target) => {
     const move = {
         from: `${String.fromCharCode(97 + source.col)}${8 - source.row}`,
@@ -89,30 +89,43 @@ const handleMove = (source, target) => {
         promotion: 'q'
     }
     socket.emit('move', move);
-    
 }
 
+// Socket event handlers
 socket.on('playerRole', (role) => {
     playerRole = role;
+    const roleText = role === 'w' ? 'White' : 'Black';
+    console.log(`You are playing as: ${roleText}`);
     renderBoard();
 });
-socket.on('spectator', () => {
 
+socket.on('spectator', () => {
     playerRole = null;
+    console.log('Spectating');
     renderBoard();
 });
+
+socket.on('gameStarted', () => {
+    boardElement.classList.remove('waiting');
+    alert('Opponent found! Game started!');
+});
+
 socket.on('boardState', (fen) => {
+    boardElement.classList.remove('waiting');
     chess.load(fen);
     renderBoard();
-})
+});
+
 socket.on('move', (move) => {
     chess.move(move);
     renderBoard();
-})
+});
+
 socket.on('invalidMove', (move) => {
     alert('Invalid move!');
     renderBoard();
 });
+
 socket.on('check', () => {
     console.log('Check!');
     alert('Check!');
@@ -121,4 +134,17 @@ socket.on('check', () => {
 socket.on('checkmate', (data) => {
     console.log('Checkmate! Winner:', data.winner);
     alert(`Checkmate! ${data.winner.charAt(0).toUpperCase() + data.winner.slice(1)} wins!`);
+});
+
+socket.on('waitingForPlayers', () => {
+    boardElement.classList.add('waiting');
+    const waitingMessage = document.createElement('div');
+    waitingMessage.classList.add('waiting-message');
+    waitingMessage.innerHTML = '<h2>Waiting for another player...</h2>';
+    boardElement.appendChild(waitingMessage);
+});
+
+socket.on('playerLeft', () => {
+    alert('Your opponent has left the game');
+    boardElement.classList.add('waiting');
 });
