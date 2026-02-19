@@ -1,4 +1,4 @@
-const {Server}=require(socket.io)
+const {Server}=require('socket.io')
 const express = require('express');
 const app = express();
 const http = require('http');
@@ -76,3 +76,4 @@ const chess = new Chess();
 let players = {};
 
 let currentPlayer = 'w';
+
