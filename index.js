@@ -8,7 +8,6 @@ const io = new Server(server);
 const path = require('path');
 const port=process.env.PORT || 3000;
 
-// Store multiple game instances
 const games = {};
 let gameIdCounter = 1;
 
@@ -19,9 +18,7 @@ app.get('/', (req, res) => {
     res.render('index')
 })
 
-// Find or create a game for a player
 function findOrCreateGame() {
-    // Look for a game that needs a second player
     for (const [gameId, game] of Object.entries(games)) {
         console.log(gameId, game.players);
         if (!game.players.black) {
@@ -29,7 +26,6 @@ function findOrCreateGame() {
         }
     }
     
-    // No available game found, create a new one
     const newGameId = `game_${gameIdCounter++}`;
     games[newGameId] = {
         chess: new Chess(),
@@ -42,7 +38,6 @@ function findOrCreateGame() {
 io.on('connection', (socket) => {
     console.log('New connection:', socket.id);
 
-    // Automatically match player to a game
     const gameId = findOrCreateGame();
     const game = games[gameId];
     
@@ -57,11 +52,9 @@ io.on('connection', (socket) => {
         game.players.black = socket.id;
         socket.emit('playerRole', 'b');
         
-        // Both players are now connected, start the game
         io.to(gameId).emit('boardState', game.chess.fen());
         io.to(gameId).emit('gameStarted');
     } else {
-        // This shouldn't happen with our logic, but handle spectators just in case
         socket.emit('spectator');
     }
 
@@ -77,7 +70,6 @@ io.on('connection', (socket) => {
                 delete game.players.black;
             }
 
-            // If game is empty, delete it
             if (!game.players.white && !game.players.black) {
                 delete games[gameId];
             } else {

@@ -5,6 +5,7 @@ let draggedPiece = null;
 let sourceSquare = null;
 let playerRole = null;
 let targetSource = null;
+let touchStartSquare = null;
 
 const renderBoard = () => {
     const board = chess.board();
@@ -25,6 +26,7 @@ const renderBoard = () => {
                 pieceElement.innerHTML = getPieceUnicode(square.type);
                 pieceElement.draggable = playerRole === square.color;
 
+                // Desktop drag events
                 pieceElement.addEventListener('dragstart', (e) => {
                     if (pieceElement.draggable) {
                         draggedPiece = pieceElement;
@@ -39,12 +41,54 @@ const renderBoard = () => {
                     targetSource = null;
                 })
 
+                // Mobile touch events
+                pieceElement.addEventListener('touchstart', (e) => {
+                    if (playerRole === square.color) {
+                        e.preventDefault();
+                        draggedPiece = pieceElement;
+                        touchStartSquare = { row: rowIndex, col: squareIndex };
+                        sourceSquare = { row: rowIndex, col: squareIndex };
+                        pieceElement.style.opacity = '0.5';
+                    }
+                });
+
+                pieceElement.addEventListener('touchmove', (e) => {
+                    e.preventDefault();
+                });
+
+                pieceElement.addEventListener('touchend', (e) => {
+                    if (draggedPiece && touchStartSquare) {
+                        e.preventDefault();
+                        const touch = e.changedTouches[0];
+                        const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+                        
+                        if (targetElement && targetElement.classList.contains('square')) {
+                            const targetRow = parseInt(targetElement.dataset.row);
+                            const targetCol = parseInt(targetElement.dataset.col);
+                            
+                            if (!isNaN(targetRow) && !isNaN(targetCol)) {
+                                targetSource = { row: targetRow, col: targetCol };
+                                handleMove(sourceSquare, targetSource);
+                            }
+                        }
+                        
+                        pieceElement.style.opacity = '1';
+                        draggedPiece = null;
+                        touchStartSquare = null;
+                        sourceSquare = null;
+                        targetSource = null;
+                    }
+                });
+
                 squareElement.appendChild(pieceElement)
 
             }
+            
+            // Desktop drop events
             squareElement.addEventListener('dragover', (e) => {
                 e.preventDefault();
             })
+            
             squareElement.addEventListener('drop', (e) => {
                 e.preventDefault();
                 if (draggedPiece) {
@@ -53,10 +97,12 @@ const renderBoard = () => {
       
                 handleMove(sourceSquare, targetSource);
             })
+            
             boardElement.appendChild(squareElement);
 
         });
     });
+    
     if (playerRole == 'b') {
         boardElement.classList.add("flipped")
     } else {

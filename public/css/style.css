@@ -1,10 +1,24 @@
-.board {
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+        }
+
+        .board {
             display: grid;
             grid-template-columns: repeat(8, minmax(0, 1fr));
             grid-template-rows: repeat(8, minmax(0, 1fr));
-            width: 80vh;
-            height: 80vh;
+            width: min(95vw, 95vh);
+            height: min(95vw, 95vh);
+            max-width: 600px;
+            max-height: 600px;
             transform: rotate(0deg);
+            touch-action: none;
+            user-select: none;
         }
 
         .piece.white {
@@ -24,6 +38,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            touch-action: none;
         }
 
         .square.light {
@@ -35,8 +50,10 @@
         }
 
         .piece {
-            font-size: 45px;
+            font-size: min(45px, 6vw);
             cursor: pointer;
+            touch-action: none;
+            user-select: none;
         }
 
         .piece.draggable {
@@ -53,7 +70,6 @@
         }
         .square.highlight {
             color: green;
-            background-color: yellow !important;
         }
         .waiting {
             opacity: 0.5;
@@ -66,11 +82,34 @@
             transform: translate(-50%, -50%);
             background-color: rgba(0, 0, 0, 0.9);
             color: white;
-            padding: 30px 50px;
+            padding: 20px 30px;
             border-radius: 10px;
-            font-size: 24px;
+            font-size: min(24px, 5vw);
             font-weight: bold;
             text-align: center;
             z-index: 1000;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .board {
+                width: 95vw;
+                height: 95vw;
+            }
+
+            .piece {
+                font-size: 8vw;
+            }
+
+            .waiting-message {
+                padding: 15px 20px;
+                font-size: 4vw;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .piece {
+                font-size: 9vw;
+            }
         }
