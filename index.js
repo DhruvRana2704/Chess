@@ -1,4 +1,3 @@
-const { Server } = require('socket.io');
 const express = require('express');
 const app = express();
 const http = require('http');
@@ -74,4 +73,5 @@ server.listen(port, () => {
 
 const chess = new Chess();
 let players = {};
+
 let currentPlayer = 'w';
