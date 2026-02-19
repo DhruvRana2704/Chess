@@ -13,6 +13,7 @@
   "dependencies": {
     "chess.js": "^1.4.0",
     "ejs": "^4.0.1",
+    "env": "^0.0.2",
     "express": "^5.2.1",
     "http": "^0.0.1-security",
     "socket.io": "^4.8.3",
